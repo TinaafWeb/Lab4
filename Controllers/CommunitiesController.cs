@@ -23,8 +23,11 @@ namespace Lab4.Controllers
         // GET: Communities
         public async Task<IActionResult> Index(string ID)
         {
-            CommunityViewModel cvm = new CommunityViewModel();
+            CommunityViewModel cvm = new CommunityViewModel();//making an Object of communityViewModel
             cvm.Communities = await _context.Communities
+
+                //Include() allows you to indicate which related entities should be
+                //read from the database as part of the same query.
                 .Include(i => i.CommunityMemberships)
                 .ThenInclude(i => i.Student)
                 .AsNoTracking()
