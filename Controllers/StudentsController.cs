@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lab4.Data;
 using Lab4.Models;
+using Lab4.Models.ViewModels;
 
 namespace Lab4.Controllers
 {
@@ -20,9 +21,24 @@ namespace Lab4.Controllers
         }
 
         // GET: Students
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int ID)
         {
-            return View(await _context.Students.ToListAsync());
+            CommunityViewModel studentViewModel = new CommunityViewModel();
+
+            studentViewModel.Students = await _context.Students
+                .Include(i => i.CommunityMemberships)
+                .ThenInclude(i => i.Community)
+                .AsNoTracking()
+                .ToListAsync()
+            ;
+
+            if (ID != 0)
+            {
+                ViewData["StudentID"] = ID;
+                studentViewModel.CommunityMemberships = studentViewModel.Students.Where(i => i.ID == ID).Single().CommunityMemberships;
+            }
+
+            return View(studentViewModel);
         }
 
         // GET: Students/Details/5
@@ -148,6 +164,45 @@ namespace Lab4.Controllers
         private bool StudentExists(int id)
         {
             return _context.Students.Any(e => e.ID == id);
+        }
+
+        // GET: Students/EditMemberships/6
+        public async Task<IActionResult> EditMemberships(int id)
+        {
+            CommunityViewModel communityViewModel = new CommunityViewModel();
+
+            communityViewModel.CommunityMemberships = await _context.CommunityMemberships.Where(i => i.StudentId == id).ToListAsync();
+            communityViewModel.Students = await _context.Students.Where(i => i.ID == id).ToListAsync();
+            communityViewModel.Communities = await _context.Communities.ToListAsync();
+
+            return View(communityViewModel);
+        }
+
+        public async Task<IActionResult> AddMemberships(int studentId, string communityId)
+        {
+            CommunityMembership addMember = new CommunityMembership();
+
+            addMember.CommunityId = communityId;
+            addMember.StudentId = studentId;
+            _context.CommunityMemberships.Add(addMember);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("EditMemberships", new { id = studentId });
+        }
+
+        public async Task<IActionResult> RemoveMemberships(int studentId, string communityId)
+        {
+            CommunityMembership removeMember = new CommunityMembership();
+
+            removeMember.CommunityId = communityId;
+            removeMember.StudentId = studentId;
+            _context.CommunityMemberships.Remove(removeMember);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("EditMemberships", new { id = studentId });
+
         }
     }
 }
