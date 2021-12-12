@@ -1,8 +1,6 @@
 ﻿@model Lab4.Models.ViewModels.CommunityViewModel
 
-@{
-    ViewData["Title"] = "Index";
-}
+@{ ViewData["Title"] = "Index"; }
 
 <h1>Index</h1>
 
@@ -13,10 +11,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Communities)
+                Title
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Students)
+                Budget
             </th>
             <th></th>
         </tr>
@@ -24,52 +22,47 @@
     <tbody>
         @foreach (var item in Model.Communities)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Budget)
-                </td>
-                <td>
-                    <a asp-action="Index" asp-route-id="@item.Id">Select</a> |
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
+            string selectedRow = "";
+            if (item.Id == ViewData["CommunityID"]?.ToString())
+            {
+                selectedRow = "success";
+            }
+<tr class="@selectedRow">
+    <td>
+        @Html.DisplayFor(modelItem => item.Title)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Budget)
+    </td>
+    <td>
+        <a asp-action="Index" asp-route-id="@item.Id">Select</a> |
+        <a asp-controller="Advertisements" asp-action="Index" asp-route-id="@item.Id">Ads</a> |
+        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+    </td>
+</tr>}
     </tbody>
 </table>
-
-<!--  if the flag to display memberships == true then display memberships-->
-@if ((bool)ViewData["sampleData"] == true)
+@if (Model.CommunityMemberships != null)
 {
-
-
-    <h2>Members Of community</h2>
-    <thead>
-        <tr>
-            <th>
-              <h5> Names</h5>
-            </th>
-            </tr>
-    </thead>
-
-    <!--  Display memberships -->
-    
-    <table class="table">
-        <tbody>
-        @foreach (var item in Model.CommunityMemberships)
-        {
-
-
-            <tr>
-                <td>
-                    @item.Student.FullName
-                </td>
-            </tr>
-        }
-            </tbody>
-    </table>
-}
+<h3>
+    Members of the Community:
+</h3>
+                <table class="table">
+                    <tr>
+                        @if (Model.CommunityMemberships.Count() > 0)
+                        {
+        <th> Name </th> }
+                        else
+                        {
+        <th> No record </th>}
+                    </tr>
+                    @foreach (var item in Model.CommunityMemberships.Select(i => i.Student))
+                    {
+    <tr>
+        <td>
+            @item.FullName
+        </td>
+    </tr>}
+                </table>}

@@ -18,9 +18,9 @@ namespace Lab4.Data
         public DbSet<Community> Communities { get; set; }
        
         public DbSet<StudentMembership> StudentMemberships { get; set; }
-
+        public DbSet<Advertisement> Advertisements { get; set; }
         public DbSet<CommunityMembership> CommunityMemberships { get; set; }
-        
+        public DbSet<AdsCommunity> AdvertisementCommunity { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +29,8 @@ namespace Lab4.Data
             modelBuilder.Entity<CommunityMembership>().ToTable("CommunityMembership");
             modelBuilder.Entity<CommunityMembership>().ToTable("CommunityMembership");
             modelBuilder.Entity<StudentMembership>().ToTable("StudentMembership");
+            modelBuilder.Entity<Advertisement>().ToTable("Advertisement");
+            modelBuilder.Entity<AdsCommunity>().ToTable("AdvertisementCommunity");
 
             modelBuilder.Entity<CommunityMembership>()
                 .HasKey(c => new { c.StudentId, c.CommunityId });

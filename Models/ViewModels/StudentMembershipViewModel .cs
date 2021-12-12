@@ -9,5 +9,6 @@ namespace Lab4.Models.ViewModels
     {
         public Student Student { get; set; }
         public IEnumerable<StudentViewModel> Memberships { get; set; }
+    
     }
 }
